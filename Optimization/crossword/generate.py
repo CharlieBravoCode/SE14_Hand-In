@@ -181,13 +181,14 @@ class CrosswordCreator():
         # All domains are non-empty, so arc consistency has been enforced
         return True
 
-
     def assignment_complete(self, assignment):
         """
         Return True if `assignment` is complete (i.e., assigns a value to each
         crossword variable); return False otherwise.
         """
-        raise NotImplementedError
+        for var in self.crossword.variables:
+            if var not in assignment:
+                return False
 
     def consistent(self, assignment):
         """
