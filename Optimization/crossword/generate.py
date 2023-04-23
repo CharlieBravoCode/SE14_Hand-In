@@ -113,7 +113,39 @@ class CrosswordCreator():
         Return True if a revision was made to the domain of `x`; return
         False if no revision was made.
         """
-        raise NotImplementedError
+
+        # Get the overlap between the variables
+        overlap = self.crossword.overlaps[x, y]
+
+        # If there is no overlap, return False
+        if not overlap:
+            return False
+        
+        # If there is an overlap, get the position of the overlapping letters
+        overlap_pos_x = overlap[0]
+        overlap_pos_y = overlap[1]
+
+        # Kepp track of values to remove
+        to_remove = []
+
+        # Check each word in x against each word in y, and if the overlap is not the same letter, remove the word
+        for val_x in self.domains[x]:
+            overlaps = False
+            for val_y in self.domains[y]:
+                # If the word is different but the letter in the overlap position is the same, mark x as overlapping
+                if val_x != val_y and val_x[overlap_pos_x] == val_y[overlap_pos_y]:
+                    overlaps = True
+                    break
+            # If x does not overlap with anything, remove it
+            if not overlaps:
+                to_remove.append(val_x)
+
+        if len(to_remove) > 0:
+            self.domains[x] = self.domains[x].difference(to_remove)
+
+        # Return True if any values were removed from the domain of x; return False otherwise
+        return len(to_remove) > 0
+            
 
     def ac3(self, arcs=None):
         """
